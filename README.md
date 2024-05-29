@@ -1,6 +1,6 @@
 # Alfresco integration with Generative AI and spaCy nlp
 
-Forked from aborroy/alfresco-genai :
+# Forked from aborroy/alfresco-genai :
 
 This project provides a collection of resources to enable the utilization of Private Generative AI in conjunction with Alfresco. Each service within the project is designed to operate locally, offering flexibility for usage in a development environment.
 
