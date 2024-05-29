@@ -1,10 +1,10 @@
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.embeddings import (
+from langchain_community.embeddings.openai import OpenAIEmbeddings
+from langchain_community.embeddings import (
     OllamaEmbeddings,
     SentenceTransformerEmbeddings,
     BedrockEmbeddings,
 )
-from langchain.chat_models import ChatOpenAI, ChatOllama, BedrockChat
+from langchain_community.chat_models import ChatOpenAI, ChatOllama, BedrockChat
 
 from typing import List, Any
 
