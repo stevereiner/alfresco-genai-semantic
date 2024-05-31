@@ -98,29 +98,6 @@ services:
         ports:
             - "8090:8090"
 
-    share:
-        build:
-          context: ./share
-          args:
-            SHARE_TAG: ${SHARE_TAG}
-            SERVER_NAME: ${SERVER_NAME}
-        mem_limit: 1872m
-        environment:
-            REPO_HOST: "alfresco"
-            REPO_PORT: "8080"
-            CSRF_FILTER_REFERER: "http://localhost:8080/.*"
-            CSRF_FILTER_ORIGIN: "http://localhost:8080"
-            JAVA_OPTS: "
-                -Dalfresco.context=alfresco
-                -Dalfresco.protocol=http
-                -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80
-                "
-        depends_on:
-          alfresco:
-            condition: service_healthy
-        volumes: 
-            - ./logs/share:/usr/local/tomcat/logs  
-
     postgres:
         image: postgres:${POSTGRES_TAG}
         mem_limit: 1872m
@@ -144,7 +121,7 @@ services:
         volumes: 
             - ./data/postgres-data:/var/lib/postgresql/data
             - ./logs/postgres:/var/log/postgresql  
-     
+
     solr6:
         build:
           context: ./search
@@ -177,15 +154,32 @@ services:
             condition: service_healthy
         volumes: 
             - ./data/solr-data:/opt/alfresco-search-services/data   
-        
-    activemq:
-        image: alfresco/alfresco-activemq:${ACTIVEMQ_TAG}
-        mem_limit: 1g
-        ports:
-            - 8161:8161
+
+
+    share:
+        build:
+          context: ./share
+          args:
+            SHARE_TAG: ${SHARE_TAG}
+            SERVER_NAME: ${SERVER_NAME}
+        mem_limit: 1872m
+        environment:
+            REPO_HOST: "alfresco"
+            REPO_PORT: "8080"
+            CSRF_FILTER_REFERER: "http://localhost:8080/.*"
+            CSRF_FILTER_ORIGIN: "http://localhost:8080"
+            JAVA_OPTS: "
+                -Dalfresco.context=alfresco
+                -Dalfresco.protocol=http
+                -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80
+                "
+        depends_on:
+          alfresco:
+            condition: service_healthy
         volumes: 
-            - ./data/activemq-data:/opt/activemq/data  
-    
+            - ./logs/share:/usr/local/tomcat/logs  
+
+           
     content-app:
         image: alfresco/alfresco-content-app:${ACA_TAG}
         mem_limit: 256m
@@ -194,6 +188,15 @@ services:
         depends_on:
           alfresco:
             condition: service_healthy
+
+    activemq:
+        image: alfresco/alfresco-activemq:${ACTIVEMQ_TAG}
+        mem_limit: 1g
+        ports:
+            - 8161:8161
+        volumes: 
+            - ./data/activemq-data:/opt/activemq/data  
+
 
     proxy:
         image: nginx:stable-alpine
