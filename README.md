@@ -1,4 +1,65 @@
-# Alfresco integration with Generative AI and spaCy nlp
+# Alfresco integration with Generative AI and spaCy NLP
+
+From alfresco-genai:
+Generative AI with local or cloud LLMs for Alfresco. Provides: summarization, categorization, image description, chat prompting about doc content.
+
+Added in alfresco-genai-semantic
+This adds NER / entity linking of documents in alfresco to Wikidata and DBpedia. Currently the 2 custom aspects have multivalue properties for the links, alfresco tags aren't used.
+The [spaCy NLP python library](https://spacy.io/) along with spaCy projects. 
+[spaCyOpenTapioca](https://spacy.io/universe/project/spacyopentapioca) is used for getting Wikidata entity links.
+[DBpedia Spotlight for SpaCy](https://spacy.io/universe/project/spacy-dbpedia-spotlight) is used for getting DBpedia entity links.
+Note these both use external servers, which can setup locally.
+NER can be done with spaCy [https://spacy.io/usage/linguistic-features#named-entities]
+The [spaCy-LLM](https://spacy.io/usage/large-language-models) python package integrates Large Language Models (LLMs) into spaCy pipelines. This project currently doesn't use spacy-llm.
+
+Note alfresco community docker 23.2 is included instead of 23.1
+
+Note: performance could be improved by changing things to send text from alfresco instead of pdf renditions to the python genai rest apis.
+
+To use, in Share UI client, add either a genai:dbpedia or a genai:wikidata aspect.
+The entity links can be seen in the in document details right side in the properties section.
+The best way to see them is in the ACA Content App with View Details with the Expand Panel clicked.
+
+To Build alfresco-genai-semantic, use the same steps as alfesco-genai below:
+1. Docker compose top level intially with alfresco-ai-listener commented out
+2. docker compose build
+3. alfresco/create_volumes.sh can be used to prepare for first time
+startup of alfresco on linux, and I assume mac. Not needed on Windows
+See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docker-installer?tab=readme-ov-file#docker-volumes)
+4. docker compose up
+5. In alfresco-ai-applier dir: mvn clean package
+6. In alfresco-ai-listener dir: mvn clean package
+7. In alfresco-ai-listener dir: docker build . -t alfresco-ai-listener
+8. in top level compose.yaml uncomment the line to include composing in alfresco-ai-listener
+9. docker compose down, docker compose up
+10. After other changes sometimes can't go wrong with
+docker compose down, docker build --no-cache, docker compose up --force-recreate
+
+alfresco-ai-applier jar can be used when ai-listener is not composed in,
+or you might be able to even if ai-listener is composed in to add aspects not thru the ui or from a rule,
+although ai-listener interaction may cause problems.
+Note you usally have to run it twice to get it when pdf renditions are ready.
+
+```sh
+$ java -jar target/alfresco-ai-applier-0.8.0.jar \
+  --applier.root.folder=/app:company_home/app:shared \
+  --applier.action=ENTITYLINKDBPEDIA
+```
+
+```sh
+$ java -jar target/alfresco-ai-applier-0.8.0.jar \
+  --applier.root.folder=/app:company_home/app:shared \
+  --applier.action=ENTITYLINKWIKIDATA
+```
+
+The genai-stack folder / docker container has two new REST apis for entity linking
+
+```bash
+curl --location 'http://localhost:8506/entitylink-wikidata' --form 'file=@"./file.pdf"'
+
+curl --location 'http://localhost:8506/entitylink-dbpedia' --form 'file=@"./file.pdf"'
+
+```
 
 # Forked from aborroy/alfresco-genai :
 
