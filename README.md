@@ -1,25 +1,28 @@
 # Alfresco integration with Generative AI and spaCy NLP
 
-From alfresco-genai:
+## From alfresco-genai:
 Generative AI with local or cloud LLMs for Alfresco. Provides: summarization, categorization, image description, chat prompting about doc content.
 
-Added in alfresco-genai-semantic
-This adds NER / entity linking of documents in alfresco to Wikidata and DBpedia. Currently the 2 custom aspects have multivalue properties for the links, alfresco tags aren't used.
+## Added in alfresco-genai-semantic:
+This adds NER / entity linking of documents in alfresco to Wikidata and DBpedia. 
+Currently the 2 custom aspects have multivalue properties for the links, alfresco tags aren't used.
 The [spaCy NLP python library](https://spacy.io/) along with spaCy projects. 
 [spaCyOpenTapioca](https://spacy.io/universe/project/spacyopentapioca) is used for getting Wikidata entity links.
 [DBpedia Spotlight for SpaCy](https://spacy.io/universe/project/spacy-dbpedia-spotlight) is used for getting DBpedia entity links.
-Note these both use external servers, which can setup locally.
-NER can be done with spaCy [https://spacy.io/usage/linguistic-features#named-entities]
+Note these both use external servers, which can be setup locally.
+NER can be done with [spaCy](https://spacy.io/usage/linguistic-features#named-entities)
 The [spaCy-LLM](https://spacy.io/usage/large-language-models) python package integrates Large Language Models (LLMs) into spaCy pipelines. This project currently doesn't use spacy-llm.
 
 Note alfresco community docker 23.2 is included instead of 23.1
 
 Note: performance could be improved by changing things to send text from alfresco instead of pdf renditions to the python genai rest apis.
 
-To use, in Share UI client, add either a genai:dbpedia or a genai:wikidata aspect.
+## To Use
+To use, in Share UI client, add either a DBpedia Entity Links (genai:entitylinks-dbpedia) or a Wikidata Entity Links (genai:entitylinks-wikidata) aspect in Manage Aspects.
 The entity links can be seen in the in document details right side in the properties section.
 The best way to see them is in the ACA Content App with View Details with the Expand Panel clicked.
 
+##  Building
 To Build alfresco-genai-semantic, use the same steps as alfesco-genai below:
 1. Docker compose top level intially with alfresco-ai-listener commented out
 2. docker compose build
@@ -35,6 +38,7 @@ See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docke
 10. After other changes sometimes can't go wrong with
 docker compose down, docker build --no-cache, docker compose up --force-recreate
 
+## Alfresco-ai-applier
 alfresco-ai-applier jar can be used when ai-listener is not composed in,
 or you might be able to even if ai-listener is composed in to add aspects not thru the ui or from a rule,
 although ai-listener interaction may cause problems.
@@ -45,21 +49,35 @@ $ java -jar target/alfresco-ai-applier-0.8.0.jar \
   --applier.root.folder=/app:company_home/app:shared \
   --applier.action=ENTITYLINKDBPEDIA
 ```
-
 ```sh
 $ java -jar target/alfresco-ai-applier-0.8.0.jar \
   --applier.root.folder=/app:company_home/app:shared \
   --applier.action=ENTITYLINKWIKIDATA
 ```
 
+## GenAI Stack
+
 The genai-stack folder / docker container has two new REST apis for entity linking
 
 ```bash
 curl --location 'http://localhost:8506/entitylink-wikidata' --form 'file=@"./file.pdf"'
-
-curl --location 'http://localhost:8506/entitylink-dbpedia' --form 'file=@"./file.pdf"'
-
 ```
+```bash
+curl --location 'http://localhost:8506/entitylink-dbpedia' --form 'file=@"./file.pdf"'
+```
+
+## Requirements
+Following tools can be used to build and deploy this project (same as alfresco-genai)
+* [Docker 4.25](https://docs.docker.com/get-docker/) (with 20 GB of RAM allocated)
+* [ollama](https://ollama.ai/)
+* [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+* [Maven 3.9](https://maven.apache.org/download)
+* Not required, but if you want to work separately with python used in previous genai and with
+  spacy code added, setup a virtual env with a recent version of python (I am using 3.12.3)
+  along with the packages in genai-stack/requirements.txt plus langchain (0.2.2 or 0.2.3)
+  since document.Dockerfile lists FROM langchain/langchain.  Use pip, don't use conda.
+
+
 
 # Forked from aborroy/alfresco-genai :
 
