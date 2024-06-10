@@ -55,8 +55,8 @@ docker compose down, docker build --no-cache, docker compose up --force-recreate
   *  The changes to alfresco-genai genai-model-share.xml is already built in "alfresco-genai-semantic\alfresco\share\modules\jars\genai-model-share-1.0.0.jar" If changed again, would need to mvn clean package in "alfresco-genai-semantic\alfresco-ai\alfresco-ai-model\genai-model-share" and replace the jar in alfresco\share and rebuild the project
 
 ## Configuration
-Note that the application.properties of ai-applier and ai-listener configured override default storage in properties
-of tags and or llm model name by the genai:summarizable apsect and insted as alfresco tags (and rebuilding independent ai-applier, and rebuilding ai-listener
+Note that the application.properties of ai-applier and ai-listener can be configured to override default storage in properties
+of tags and or llm model name by the genai:summarizable apsect and instead as alfresco tags (and rebuilding independent ai-applier, and rebuilding ai-listener
 and rebuilding the top level compose with updated alfresco-ai-listener docker)
 Note: the entity link aspect properties don't support this reconfiguring.
 ```
