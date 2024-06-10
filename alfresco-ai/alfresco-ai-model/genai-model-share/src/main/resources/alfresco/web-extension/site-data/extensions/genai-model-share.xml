@@ -5,7 +5,6 @@
       <id>CMM_GenerativeAI</id>
       <auto-deploy>true</auto-deploy>
       <configurations>
-
         <!-- Document Library config section -->
         <config condition="DocumentLibrary" evaluator="string-compare" replace="false">
           <aspects>
@@ -14,11 +13,12 @@
               <aspect label="Classified with AI" name="genai:classified"/>
               <aspect label="Promptable with AI" name="genai:promptable"/>
               <aspect label="Classifiable with AI" name="genai:classifiable"/>
-              <aspect label="Descriptable with AI" name="genai:descriptable"/>
+              <aspect label="Descriptable Image with AI" name="genai:descriptable"/>
+              <aspect label="Wikidata Entity Links" name="genai:entitylinks-wikidata"/>
+              <aspect label="DBpedia Entity Links" name="genai:entitylinks-dbpedia"/>
             </visible>
           </aspects>
         </config>
-
         <!-- Form configuration section - aspect -->
         <config condition="genai:summarizable" evaluator="aspect">
           <forms>
@@ -126,6 +126,41 @@
             </form>
           </forms>
         </config>
+
+        <config condition="genai:entitylinks-dbpedia" evaluator="aspect">
+          <forms>
+            <form>
+              <field-visibility>
+                <show for-mode="view" id="genai:linksDBpedia"/>
+              </field-visibility>
+              <appearance>
+                <set appearance="title" id="genai:entitylinks-dbpedia_cmm_set0" label-id="DBpedia Entity Links"/>
+                <field id="genai:linksDBpedia" read-only="true" set="genai:entitylinks-dbpedia_cmm_set0">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                  </control>
+                </field>
+              </appearance>
+            </form>
+          </forms>          
+        </config>
+
+        <config condition="genai:entitylinks-wikidata" evaluator="aspect">
+          <forms>
+            <form>
+              <field-visibility>
+                <show for-mode="view" id="genai:linksWikidata"/>
+              </field-visibility>
+              <appearance>
+                <set appearance="title" id="genai:entitylinks-wikidata_cmm_set0" label-id="Wikidata Entity Links"/>
+                <field id="genai:linksWikidata" read-only="true" set="genai:entitylinks-wikidata_cmm_set0">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                  </control>
+                </field>
+              </appearance>
+            </form>
+          </forms>          
+        </config>
+
 
       </configurations>
     </module>

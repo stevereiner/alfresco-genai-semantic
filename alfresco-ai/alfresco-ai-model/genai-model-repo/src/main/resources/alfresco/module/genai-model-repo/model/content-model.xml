@@ -112,7 +112,7 @@
             </properties>
         </aspect>
         <aspect name="genai:descriptable">
-            <title>Descriptable with AI</title>
+            <title>Descriptable Image with AI</title>
             <properties>
                 <property name="genai:description">
                     <title>Description</title>
@@ -134,5 +134,39 @@
                 </property>
             </properties>
         </aspect>
+        
+        <aspect name="genai:entitylinks-wikidata">
+            <title>Wikidata Entity Links</title>
+            <properties>
+                <property name="genai:linksWikidata">
+                    <title>Tag Links</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <multiple>true</multiple>                    
+                    <index enabled="true">
+                        <tokenised>true</tokenised>
+                        <facetable>false</facetable>
+                    </index>
+                </property>
+            </properties>
+        </aspect>       
+
+        <aspect name="genai:entitylinks-dbpedia">
+            <title>DBpedia Entity Links</title>
+            <properties>
+                <property name="genai:linksDBpedia">
+                    <title>Tag Links</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <multiple>true</multiple>
+                    <index enabled="true">
+                        <tokenised>true</tokenised>
+                        <facetable>false</facetable>
+                    </index>
+                </property>
+            </properties>
+        </aspect>       
+
+ 
     </aspects>
 </model>
