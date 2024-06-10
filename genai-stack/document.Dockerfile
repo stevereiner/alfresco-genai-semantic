@@ -14,6 +14,7 @@ RUN pip install --upgrade -r requirements.txt
 
 COPY document.py .
 COPY chains.py .
+COPY entitylink.py .
 
 HEALTHCHECK CMD curl --fail http://localhost:8506
 

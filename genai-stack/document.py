@@ -4,22 +4,24 @@ import pycurl
 import json
 from io import BytesIO
 from urllib.parse import urlencode
-
 import streamlit as st
 from langchain.chains import RetrievalQA
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain_community.vectorstores.neo4j_vector import Neo4jVector
+
 from streamlit.logger import get_logger
-from chains import (
-    load_embedding_model,
-    load_llm,
-)
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-
 from dotenv import load_dotenv
+
+from chains import load_embedding_model
+from chains import load_llm
+
+from entitylink import getEntityLinksWikidata
+from entitylink import getEntityLinksDBpedia
+
 
 load_dotenv(".env")
 
@@ -168,3 +170,20 @@ async def summary(file: UploadFile):
     tags_result = qa.run(tags_query, callbacks=[stream_handler])
 
     return {"summary": summary_result, "tags": tags_result, "model": llm_name}
+
+
+@app.post("/entitylink-wikidata")
+async def entitylinkWikidata(file: UploadFile):
+
+    links = getEntityLinksWikidata(file)
+
+    return {"links": links, "target": "Wikidata"}
+
+
+@app.post("/entitylink-dbpedia")
+async def entityLinkDBpedia(file: UploadFile):
+
+    links = getEntityLinksDBpedia(file)
+
+    return {"links": links, "target": "DBpedia"}
+

@@ -1,9 +1,6 @@
-from langchain_community.embeddings.openai import OpenAIEmbeddings
-from langchain_community.embeddings import (
-    OllamaEmbeddings,
-    SentenceTransformerEmbeddings,
-    BedrockEmbeddings,
-)
+from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import OllamaEmbeddings, BedrockEmbeddings
+from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_community.chat_models import ChatOpenAI, ChatOllama, BedrockChat
 
 from typing import List, Any

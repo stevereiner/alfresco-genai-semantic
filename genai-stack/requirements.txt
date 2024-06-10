@@ -19,3 +19,12 @@ pycurl
 langchain-openai
 langchain-community
 langchain-google-genai
+en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.7.3/en_core_web_trf-3.7.3-py3-none-any.whl#sha256=f72abb34bdf174876bd4267b29b2501677e605e0a251fdc56c163003182ed68b
+spacy==3.7.5
+#spacy-llm==0.7.2
+spacy-loggers==1.0.5
+spacy_dbpedia_spotlight==0.2.6
+spacyopentapioca==0.1.7
+
+
+
