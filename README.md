@@ -18,9 +18,21 @@ Note alfresco community docker 23.2 is included instead of 23.1
 Note: performance could be improved by changing things to send text from alfresco instead of pdf renditions to the python genai rest apis.
 
 ## To Use
-To use, in Share UI client, add either a DBpedia Entity Links (genai:entitylinks-dbpedia) or a Wikidata Entity Links (genai:entitylinks-wikidata) aspect in Manage Aspects.
-The entity links can be seen in the in document details right side in the properties section.
-The best way to see them is in the ACA Content App with View Details with the Expand Panel clicked.
+  * To use, in Share UI client, add either a DBpedia Entity Links (genai:entitylinks-dbpedia) or a Wikidata Entity Links (genai:entitylinks-wikidata) aspect in Manage Aspects.
+  * The entity links can be seen in the in Share document details right side in the properties section. The best way to see them is in the ACA Content App with View Details with the Expand Panel clicked.
+  * `genai:entitylinks-dbpedia` aspect stores a value in a multivalue property genai:linksDBpedia for each entity link to DBpedia. Each value has the text of term, the DBpedia link url, and DBPEDIA_ENT. Example: Earth http://dbpedia.org/resource/Earth DBPEDIA_ENT.  
+  * `genai:entitylinks-wikidata` aspect stores a value in a multivalue property genai:linksWikidata for each entity link to Wikidata. Each value has the text of term, the Wikidata link url, and LOC or ORG, PERSON, etc. Example: Earth https://www.wikidata.org/entity/Q2 LOC
+  * Note the original genai aspects show up better in Share document details. ACA content app by default, only has a single line for single value properties.
+  * To use the original alfresco-genai actions, in the Manage Aspects of Share add any of the following aspects:
+  * `genai:summarizable` aspect is used to store `summary` and `tags` generated with AI. Note the tag terms come back from the summary prompt. By default, they are stored in the multivalue property genai:tags of genai:summarizable aspect. See configuration section below for how to setup storing them in tags.
+  * `genai:promptable` aspect is used to store the `question` provided by the user and the `answer` generated with AI
+  * `genai:classifiable` aspect is used to store the list of terms available for the AI to classify a document. It should be applied to a folder
+  * `genai:classified` aspect is used to store the term selected by the AI. It should be applied to a document
+  * `genai:descriptable` aspect is used to store the description generated with AI. It should be applied to a picture
+
+## Notes on the entity links property values and python code
+  * genai:entitylinks-dbpedia  In alfresco-genai-semantic\genai-stack\entitylink.py, a list of 0 to n types can be used from ent._.dbpedia_raw_result['@types'] instead of DBPEDIA_ENT ent.label_, but its varying and complex: example for Earth "Wikidata:Q634,Schema:Place,DBpedia:Place,DBpedia:Location,DBpedia:CelestialBody,DBpedia:Planet"
+  * genai:entitylinks-wikidata In alfresco-genai-semantic\genai-stack\entitylink.py, addtional fields such as  "start": ent.start_char and  "end": ent.end_char, could be used with  spacy.displacy.servespacy.displacy.serve(params, style="ent", manual=True) to display highlighted text terms and entity link clickabe labels [displlacy] (https://spacy.io/usage/visualizers#ent)
 
 ##  Building
 To Build alfresco-genai-semantic, use the same steps as alfesco-genai below:
@@ -37,6 +49,28 @@ See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docke
 9. docker compose down, docker compose up
 10. After other changes sometimes can't go wrong with
 docker compose down, docker build --no-cache, docker compose up --force-recreate
+
+# Custom content model
+  * The changes to alfresco-genai comtent-model.xml is already built in "alfresco-genai-semantic\alfresco\alfresco\modules\jars\genai-model-repo-1.0.0.jar"  If changed again would need to mvn clean package in "alfresco-genai-semantic\alfresco-ai\alfresco-ai-model\genai-model-repo" and replace the jar in alfresco\alfresco and rebuild the project
+  *  The changes to alfresco-genai genai-model-share.xml is already built in "alfresco-genai-semantic\alfresco\share\modules\jars\genai-model-share-1.0.0.jar" If changed again, would need to mvn clean package in "alfresco-genai-semantic\alfresco-ai\alfresco-ai-model\genai-model-share" and replace the jar in alfresco\share and rebuild the project
+
+## Configuration
+Note that the application.properties of ai-applier and ai-listener configured override default storage in properties
+of tags and or llm model name by the genai:summarizable apsect and insted as alfresco tags (and rebuilding independent ai-applier, and rebuilding ai-listener
+and rebuilding the top level compose with updated alfresco-ai-listener docker)
+Note: the entity link aspect properties don't support this reconfiguring.
+```
+# Aspect that triggers the summarization task
+content.service.summary.aspect=genai:summarizable
+# Node property to store the summary obtained from GenAI Stack
+content.service.summary.summary.property=genai:summary
+# Node property to store tags obtained from GenAI Stack; use TAG as a value to use a tag instead of a property
+content.service.summary.tags.property=genai:tags
+#content.service.summary.tags.property=TAG
+# Node property to store the Large Language Model (LLM) used; use TAG as a value to use a tag instead of a property
+content.service.summary.model.property=genai:llmSummary
+#content.service.summary.tags.property=TAG
+```
 
 ## Alfresco-ai-applier
 alfresco-ai-applier jar can be used when ai-listener is not composed in,
