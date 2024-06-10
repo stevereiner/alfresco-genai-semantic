@@ -63,6 +63,11 @@ public class AiApplierDescription implements AiApplierAction {
 
         String uuid = entry.getEntry().getId();
 
+        if (!getMimeType(uuid).contains("image")) {
+			LOG.debug("Document {} is not an image, description is not supported", entry.getEntry().getName());
+			return false;
+		}
+        
         LOG.debug("Describing picture {} ({})", entry.getEntry().getName(), uuid);
 
         try {
@@ -92,4 +97,8 @@ public class AiApplierDescription implements AiApplierAction {
     public String getUpdateField() {
         return descriptionProperty;
     }
+    
+    public String getMimeType(String uuid) {
+    	return nodesApi.getNode(uuid, null, null, null).getBody().getEntry().getContent().getMimeType();
+    }        
 }

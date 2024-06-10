@@ -12,7 +12,7 @@ public interface AiApplierAction {
      * Enumeration of supported AI actions.
      */
     enum Action {
-        SUMMARY, CLASSIFY, DESCRIBE
+        SUMMARY, CLASSIFY, DESCRIBE, ENTITYLINKWIKIDATA, ENTITYLINKDBPEDIA
     }
 
     /**
@@ -29,5 +29,5 @@ public interface AiApplierAction {
      * @return The name of the field updated by the AI action.
      */
     String getUpdateField();
-
+    
 }

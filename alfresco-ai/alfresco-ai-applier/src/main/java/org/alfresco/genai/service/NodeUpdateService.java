@@ -5,8 +5,11 @@ import org.alfresco.core.handler.TagsApi;
 import org.alfresco.core.model.NodeBodyUpdate;
 import org.alfresco.core.model.TagBody;
 import org.alfresco.genai.model.Description;
+import org.alfresco.genai.model.EntityLinks;
 import org.alfresco.genai.model.Summary;
 import org.alfresco.genai.model.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,8 @@ import java.util.Map;
 @Service
 public class NodeUpdateService {
 
+    static final Logger LOG = LoggerFactory.getLogger(NodeUpdateService.class);
+	
     /**
      * Constant representing the property name for tags.
      */
@@ -87,7 +92,32 @@ public class NodeUpdateService {
      */
     @Value("${content.service.description.model.property}")
     private String descriptionModelProperty;
+  
+    /**
+     * Aspect name for storing Wikidata entity links data.
+     */
+    @Value("${content.service.entitylinks-wikidata.aspect}")
+    private String entityLinksWikidataAspect;
 
+    /**
+     * The property name for storing  Wikidata entity links data in the Alfresco repository obtained from configuration.
+     */
+    @Value("${content.service.entitylinks-wikidata.linksWikidata.property}")
+    private String linksWikidataProperty;
+
+    /**
+     * Aspect name for storing DBpedia entity links data.
+     */
+    @Value("${content.service.entitylinks-dbpedia.aspect}")
+    private String entityLinksDBpediaAspect;
+    
+    /**
+     * The property name for storing DBpedia entity links data in the Alfresco repository obtained from configuration.
+     */
+    @Value("${content.service.entitylinks-dbpedia.linksDBpedia.property}")
+    private String linksDBpediaProperty;
+    
+    
     /**
      * Autowired instance of {@link NodesApi} for communication with the Alfresco Nodes API.
      */
@@ -160,7 +190,7 @@ public class NodeUpdateService {
                         .aspectNames(aspectNames),
                 null, null);
     }
-
+    
     /**
      * Updates the node properties with description and model information for the document identified by its UUID based
      * on the provided {@link Description} object.
@@ -184,5 +214,55 @@ public class NodeUpdateService {
                         .aspectNames(aspectNames),
                 null, null);
     }
+    
+    /**
+     * Updates the node properties with entity links for the document identified by its UUID based
+     * on the provided {@link EntityLinks} object.
+     *
+     * @param uuid         The unique identifier of the document node.
+     * @param entityLinks  The {@link EntityLinks} object containing the entity links data.
+     */
+    public void updateNodeEntityLinksWikidata(String uuid, EntityLinks entityLinks) {
 
+    	LOG.debug("ai-applier NodeUpdateService updateNodeEntityLinksWikidata");  	
+
+    	List<String> aspectNames =
+                nodesApi.getNode(uuid, null, null, null).getBody().getEntry().getAspectNames();
+        if (!aspectNames.contains(entityLinksWikidataAspect)) {
+            aspectNames.add(entityLinksWikidataAspect);
+        }
+
+        nodesApi.updateNode(uuid,
+                new NodeBodyUpdate()
+                        .properties(Map.of(
+                                linksWikidataProperty, entityLinks.getEntityLinks() ))
+                        .aspectNames(aspectNames),
+                null, null);
+    }
+
+    /**
+     * Updates the node properties with entity links for the document identified by its UUID based
+     * on the provided {@link EntityLinks} object.
+     *
+     * @param uuid         The unique identifier of the document node.
+     * @param entityLinks  The {@link EntityLinks} object containing the entity links data.
+     */
+    public void updateNodeEntityLinksDBpedia(String uuid, EntityLinks entityLinks) {
+
+    	LOG.debug("ai-applier NodeUpdateService updateNodeEntityLinksDBpedia");   	
+    	
+        List<String> aspectNames =
+                nodesApi.getNode(uuid, null, null, null).getBody().getEntry().getAspectNames();
+        if (!aspectNames.contains(entityLinksDBpediaAspect)) {
+            aspectNames.add(entityLinksDBpediaAspect);
+        }
+
+        nodesApi.updateNode(uuid,
+                new NodeBodyUpdate()
+                        .properties(Map.of(
+                                linksDBpediaProperty, entityLinks.getEntityLinks() ))
+                        .aspectNames(aspectNames),
+                null, null);
+    }    
+    
 }

@@ -29,6 +29,19 @@ public class AiApplierActionFactory {
     AiApplierDescription aiApplierDescription;
 
     /**
+     * Action that creates Wikidata entity links for Alfresco documents.
+     */
+    @Autowired
+    AiApplierEntityLinkWikidata aiApplierEntityLinkWikidata;
+
+    /**
+     * Action that creates DBpedia entity links for Alfresco documents.
+     */
+    @Autowired
+    AiApplierEntityLinkDBpedia aiApplierEntityLinkDBpedia;
+
+    
+    /**
      * Returns the appropriate {@link AiApplierAction} instance based on the specified action.
      *
      * @param action The type of AI action to be performed.
@@ -40,6 +53,8 @@ public class AiApplierActionFactory {
             case SUMMARY -> aiApplierSummary;
             case CLASSIFY -> aiApplierClassify;
             case DESCRIBE -> aiApplierDescription;
+            case ENTITYLINKWIKIDATA -> aiApplierEntityLinkWikidata;
+            case ENTITYLINKDBPEDIA -> aiApplierEntityLinkDBpedia;
             default -> throw new RuntimeException("Action " + action + " is not supported!");
         };
     }

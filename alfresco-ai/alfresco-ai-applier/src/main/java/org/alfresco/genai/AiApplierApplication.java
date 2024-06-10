@@ -29,6 +29,9 @@ import java.util.List;
  * The Classifying action retrieves documents from a folder using the Alfresco Search API,
  * checks for the availability of PDF renditions, and updates document nodes by selecting a term
  * from a list of terms using the GenAi service.
+ * 
+ * The Entity linking action retrieves documents from a folder using the Alfresco Search API,
+ * checks for the availability of PDF renditions, and updates document nodes entity link data.
  */
 
 @SpringBootApplication
@@ -37,13 +40,14 @@ public class AiApplierApplication implements CommandLineRunner {
     static final Logger LOG = LoggerFactory.getLogger(AiApplierApplication.class);
 
     /**
-     * Action to be applied (SUMMARY, CLASSIFY)
+     * Action to be applied (SUMMARY, CLASSIFY, DESCRIBE, ENTITYLINKWIKIDATA, ENTITYLINKDBPEDIA)
      */
     @Value("${applier.action}")
     AiApplierAction.Action actionName;
 
     /**
-     * Factory to retrieve the Action to be executed (AiApplierClassify, AiApplierSummary)
+     * Factory to retrieve the Action to be executed 
+     * (AiApplierClassify, AiApplierSummary, AiApplierEntityLinkWikdata, AiApplierEntityLinkWikdata)
      */
     @Autowired
     AiApplierActionFactory aiApplierActionFactory;
@@ -131,6 +135,7 @@ public class AiApplierApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
+    	
         SpringApplication.run(AiApplierApplication.class, args);
     }
 

@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * The {@code AiApplierSummary} class is a Spring component that implements the {@link AiApplierAction} interface
- * for performing document summarization in the AI Applier application.
+ * The {@code AiApplierDBpedia} class is a Spring component that implements the {@link AiApplierAction} interface
+ * for performing document DBpedia entity linking in the AI Applier application.
  */
 @Component
-public class AiApplierSummary implements AiApplierAction {
+public class AiApplierEntityLinkDBpedia implements AiApplierAction {
 
-    static final Logger LOG = LoggerFactory.getLogger(AiApplierSummary.class);
+    static final Logger LOG = LoggerFactory.getLogger(AiApplierEntityLinkDBpedia.class);
 
     /**
      * Autowired instance of {@link NodesApi} for communication with the Alfresco Nodes API.
@@ -29,10 +29,10 @@ public class AiApplierSummary implements AiApplierAction {
     NodesApi nodesApi;   
     
     /**
-     * The property name for storing the document summary in the Alfresco repository obtained from configuration.
+     * The property name for storing the document DBpedia entity links in the Alfresco repository obtained from configuration.
      */
-    @Value("${content.service.summary.summary.property}")
-    String summaryProperty;
+    @Value("${content.service.entitylinks-dbpedia.linksDBpedia.property}")
+    String entitylinksDBpediaProperty;
 
     /**
      * Http client for interacting with the GenAI service
@@ -53,11 +53,11 @@ public class AiApplierSummary implements AiApplierAction {
     NodeUpdateService nodeUpdateService;
 
     /**
-     * Executes the document summarization action on the given {@code ResultSetRowEntry}.
+     * Executes the document entity links action on the given {@code ResultSetRowEntry}.
      *
-     * @param entry The entry representing an Alfresco document for summarization.
-     * @return {@code true} if the summarization was successful; otherwise, {@code false}.
-     * @throws RuntimeException If an error occurs during summarization, such as IO exception.
+     * @param entry The entry representing an Alfresco document for entity linking.
+     * @return {@code true} if the entity linking was successful; otherwise, {@code false}.
+     * @throws RuntimeException If an error occurs during entity linking, such as IO exception.
      */
     @Override
     public boolean execute(ResultSetRowEntry entry) {
@@ -65,18 +65,18 @@ public class AiApplierSummary implements AiApplierAction {
         String uuid = entry.getEntry().getId();
 
         if (getMimeType(uuid).contains("image")) {
-			LOG.debug("Document {} is an image, summarization is not supported", entry.getEntry().getName());
+			LOG.debug("Document {} is an image, entity linking is not supported", entry.getEntry().getName());
 			return false;
 		}
         
-        LOG.debug("Summarizing document {} ({})", entry.getEntry().getName(), uuid);
+        LOG.info("AiApplierEntityLinkDBpedia DBpedia entity linking document {} ({})", entry.getEntry().getName(), uuid);
 
         if (renditionService.pdfRenditionIsCreated(uuid)) {
 
             try {
 
-                nodeUpdateService.updateNodeSummary(uuid, genAiClient.getSummary(renditionService.getRenditionContent(uuid)));
-                LOG.debug("Document {} has been updated with summary and tag", entry.getEntry().getName());
+                nodeUpdateService.updateNodeEntityLinksDBpedia(uuid, genAiClient.getEntityLinksDBpedia(renditionService.getRenditionContent(uuid)));
+                LOG.info("Document {} has been updated with all DBpedia entity links data in an apsect", entry.getEntry().getName());
                 return true;
 
             } catch (IOException e) {
@@ -85,7 +85,7 @@ public class AiApplierSummary implements AiApplierAction {
 
         } else {
 
-            LOG.debug("PDF rendition for document {} was not available, it has been requested", entry.getEntry().getName());
+            LOG.info("PDF rendition for document {} was not available, it has been requested", entry.getEntry().getName());
             renditionService.createPdfRendition(uuid);
 
         }
@@ -95,13 +95,13 @@ public class AiApplierSummary implements AiApplierAction {
     }
 
     /**
-     * Returns the property name for storing the document summary in the Alfresco repository.
+     * Returns the property name for storing the DBpedia entity linking data in the Alfresco repository.
      *
-     * @return The name of the property used for storing document summaries in Alfresco.
+     * @return The name of the property used for storing DBpedia entity linking data in Alfresco.
      */
     @Override
     public String getUpdateField() {
-        return summaryProperty;
+        return entitylinksDBpediaProperty;
     }
     
     public String getMimeType(String uuid) {

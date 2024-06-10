@@ -2,9 +2,14 @@ package org.alfresco.genai.service;
 
 import jakarta.annotation.PostConstruct;
 import okhttp3.*;
+
+import org.alfresco.genai.action.AiApplierEntityLinkDBpedia;
 import org.alfresco.genai.model.Description;
+import org.alfresco.genai.model.EntityLinks;
 import org.alfresco.genai.model.Summary;
 import org.alfresco.genai.model.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -16,6 +21,8 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * The {@code GenAiClient} class is a Spring service responsible for interacting with the GenAI service to obtain
@@ -24,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class GenAiClient {
 
+    static final Logger LOG = LoggerFactory.getLogger(GenAiClient.class);
+    
     /**
      * The base URL of the GenAI service obtained from configuration.
      */
@@ -35,7 +44,7 @@ public class GenAiClient {
      */
     @Value("${genai.request.timeout}")
     Integer genaiTimeout;
-
+   
     /**
      * Static instance of {@link JsonParser} to parse JSON responses from the GenAI service.
      */
@@ -156,5 +165,78 @@ public class GenAiClient {
                 .model(aiResponse.get("model").toString());
 
     }
+    
+    /**
+     * Retrieves a document Wikidata entity links from the GenAI service for the provided PDF file.
+     *
+     * @param pdfFile The PDF file for which the entity links are requested.
+     * @return A {@link EntityLinks} object containing the entity links information.
+     * @throws IOException If an I/O error occurs during the HTTP request or response processing.
+     */
+    public EntityLinks getEntityLinksWikidata(File pdfFile) throws IOException {
+
+    	LOG.debug("ai-applier GenAiClient getEntityLinksWikidata");
+
+    	RequestBody requestBody = new MultipartBody
+                .Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", pdfFile.getName(), RequestBody.create(pdfFile, MediaType.parse("application/pdf")))
+                .build();
+
+        Request request = new Request
+                .Builder()
+                .url(genaiUrl + "/entitylink-wikidata")
+                .post(requestBody)
+                .build();
+        
+        String response = client.newCall(request).execute().body().string();
+
+        Map<String, Object> aiResponse = JSON_PARSER.parseMap(response);
+        String linksJason = aiResponse.get("links").toString();
+        List<Object> objectList = JSON_PARSER.parseList(linksJason);
+		List<String> stringList = objectList.stream()
+		                                    .map(Object::toString)
+		                                    .collect(Collectors.toList());
+        return new EntityLinks()
+                .entityLinks(stringList)
+                .target("Wikidata");
+    }
+
+    /**
+     * Retrieves a document DBpedia entity links from the GenAI service for the provided PDF file.
+     *
+     * @param pdfFile The PDF file for which the entity links are requested.
+     * @return A {@link EntityLinks} object containing the entity links information.
+     * @throws IOException If an I/O error occurs during the HTTP request or response processing.
+     */
+    public EntityLinks getEntityLinksDBpedia(File pdfFile) throws IOException {
+    	
+    	LOG.debug("ai-applier GenAiClient getEntityLinksDBpedia");
+
+    	RequestBody requestBody = new MultipartBody
+                .Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", pdfFile.getName(), RequestBody.create(pdfFile, MediaType.parse("application/pdf")))
+                .build();
+
+        Request request = new Request
+                .Builder()
+                .url(genaiUrl + "/entitylink-dbpedia")
+                .post(requestBody)
+                .build();
+
+        String response = client.newCall(request).execute().body().string();
+        
+        Map<String, Object> aiResponse = JSON_PARSER.parseMap(response);
+        String linksJason = aiResponse.get("links").toString();
+        List<Object> objectList = JSON_PARSER.parseList(linksJason);
+		List<String> stringList = objectList.stream()
+		                                    .map(Object::toString)
+		                                    .collect(Collectors.toList());
+        return new EntityLinks()
+                .entityLinks(stringList)
+                .target("DBpedia");
+    }
+    
 
 }
