@@ -31,8 +31,8 @@ Note: performance could be improved by changing things to send text from alfresc
   * `genai:descriptable` aspect is used to store the description generated with AI. It should be applied to a picture
 
 ## Notes on the entity links property values and python code
-  * genai:entitylinks-dbpedia  In alfresco-genai-semantic\genai-stack\entitylink.py, a list of 0 to n types can be used from ent._.dbpedia_raw_result['@types'] instead of DBPEDIA_ENT ent.label_, but its varying and complex: example for Earth "Wikidata:Q634,Schema:Place,DBpedia:Place,DBpedia:Location,DBpedia:CelestialBody,DBpedia:Planet"
-  * genai:entitylinks-wikidata In alfresco-genai-semantic\genai-stack\entitylink.py, addtional fields such as  "start": ent.start_char and  "end": ent.end_char, could be used with  spacy.displacy.servespacy.displacy.serve(params, style="ent", manual=True) to display highlighted text terms and entity link clickabe labels [displlacy] (https://spacy.io/usage/visualizers#ent)
+  * `genai:entitylinks-dbpedia`  In alfresco-genai-semantic\genai-stack\entitylink.py, a list of 0 to n types can be used from "ent._.dbpedia_raw_result['@types']" instead of DBPEDIA_ENT label, but its varying and complex: example for Earth "Wikidata:Q634,Schema:Place,DBpedia:Place,DBpedia:Location,DBpedia:CelestialBody,DBpedia:Planet"
+  * `genai:entitylinks-wikidata` In alfresco-genai-semantic\genai-stack\entitylink.py, addtional fields such as  "start" and  "end", could be used with  [displacy](https://spacy.io/usage/visualizers#ent) to display highlighted text term spans and provide entity link clickable labels.
 
 ##  Building
 To Build alfresco-genai-semantic, use the same steps as alfesco-genai below:
