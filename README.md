@@ -39,12 +39,12 @@ To Build alfresco-genai-semantic, use the same steps as alfesco-genai below:
 1. alfresco/create_volumes.sh can be used to prepare for first time
 startup of alfresco on linux, and I assume mac. This creates log and data folders and sets their permissions.
 Not needed on Windows. See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docker-installer?tab=readme-ov-file#docker-volumes)
-2. Docker compose top level intially with alfresco-ai-listener commented out
+2. Docker compose top level intially with alfresco-ai-listener commented out in compose.yaml
 3. docker compose up
 4. In alfresco-ai-applier dir: mvn clean package
 5. In alfresco-ai-listener dir: mvn clean package
 6. In alfresco-ai-listener dir: docker build . -t alfresco-ai-listener
-7. in top level compose.yaml uncomment the line to include composing in alfresco-ai-listener
+7. in top level compose.yaml, uncomment the line to include composing in alfresco-ai-listener
 8. docker compose down, docker compose up
 
 Note: After other changes sometimes can't go wrong with
@@ -112,20 +112,17 @@ Following tools can be used to build and deploy this project (same as alfresco-g
   since document.Dockerfile lists FROM langchain/langchain.  Use pip, don't use conda.
 
 ## Testing
-* Note: when alfresco-genai-semantic is up and running correctly 11/13 images or sub conainers will continue.
-These can be seent in docker desktop, or with docker compose ps at the command line
+* Note: when alfresco-genai-semantic is up and running correctly 11/13 images / sub-containers will continue.
+These can be seen in docker desktop, or with docker compose ps at the command line. The pull-model and pull-vision-model will do their jobs and exit.
 * In the alfresco-genai-semantic/test folder, upload space-station.txt to your folder in alfresco and apply the
 genai:entitylinks-dbpedia aspect
 * In the alfresco-genai-semantic/test folder, upload space-station.txt again to your folder in alfresco and apply the
-genai:entitylinks-wikidata aspect to duplicate file. (Sometimes their is an issue doing both on the same doc)
-* In the share client, the first doc with the dbpedia aspect. should havve property values matching test/dbpedia-expected.txt 
+genai:entitylinks-wikidata aspect to the duplicate file. (Sometimes there is an issue doing both on the same doc)
+* In the share client, the first doc with the dbpedia aspect should have property values matching test/dbpedia-expected.txt 
 (with the multi-values of the properties on separate lines without commas between them)
-* In the share client, the second doc with the wikidata aspect, should poperty values matching test/wikidata-expected.txt 
+* In the share client, the second doc with the wikidata aspect, should have property values matching test/wikidata-expected.txt 
 * When the view details of the ACA content app is expanded on the first doc, it should look like test/dbpedia-expected-aca.jpg
 * When the view details of the ACA content app is expanded on the second doc, it should like test/wikidata-expected-aca.jpg
-
-
-
 
 
 
