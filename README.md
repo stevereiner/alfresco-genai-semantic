@@ -36,18 +36,18 @@ Note: performance could be improved by changing things to send text from alfresc
 
 ##  Building
 To Build alfresco-genai-semantic, use the same steps as alfesco-genai below:
-1. Docker compose top level intially with alfresco-ai-listener commented out
-2. docker compose build
-3. alfresco/create_volumes.sh can be used to prepare for first time
-startup of alfresco on linux, and I assume mac. Not needed on Windows
-See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docker-installer?tab=readme-ov-file#docker-volumes)
-4. docker compose up
-5. In alfresco-ai-applier dir: mvn clean package
-6. In alfresco-ai-listener dir: mvn clean package
-7. In alfresco-ai-listener dir: docker build . -t alfresco-ai-listener
-8. in top level compose.yaml uncomment the line to include composing in alfresco-ai-listener
-9. docker compose down, docker compose up
-10. After other changes sometimes can't go wrong with
+1. alfresco/create_volumes.sh can be used to prepare for first time
+startup of alfresco on linux, and I assume mac. This creates log and data folders and sets their permissions.
+Not needed on Windows. See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docker-installer?tab=readme-ov-file#docker-volumes)
+2. Docker compose top level intially with alfresco-ai-listener commented out
+3. docker compose up
+4. In alfresco-ai-applier dir: mvn clean package
+5. In alfresco-ai-listener dir: mvn clean package
+6. In alfresco-ai-listener dir: docker build . -t alfresco-ai-listener
+7. in top level compose.yaml uncomment the line to include composing in alfresco-ai-listener
+8. docker compose down, docker compose up
+
+Note: After other changes sometimes can't go wrong with
 docker compose down, docker build --no-cache, docker compose up --force-recreate
 
 # Custom content model
@@ -110,6 +110,22 @@ Following tools can be used to build and deploy this project (same as alfresco-g
   spacy code added, setup a virtual env with a recent version of python (I am using 3.12.3)
   along with the packages in genai-stack/requirements.txt plus langchain (0.2.2 or 0.2.3)
   since document.Dockerfile lists FROM langchain/langchain.  Use pip, don't use conda.
+
+## Testing
+* Note: when alfresco-genai-semantic is up and running correctly 11/13 images or sub conainers will continue.
+These can be seent in docker desktop, or with docker compose ps at the command line
+* In the alfresco-genai-semantic/test folder, upload space-station.txt to your folder in alfresco and apply the
+genai:entitylinks-dbpedia aspect
+* In the alfresco-genai-semantic/test folder, upload space-station.txt again to your folder in alfresco and apply the
+genai:entitylinks-wikidata aspect to duplicate file. (Sometimes their is an issue doing both on the same doc)
+* In the share client, the first doc with the dbpedia aspect. should havve property values matching test/dbpedia-expected.txt 
+(with the multi-values of the properties on separate lines without commas between them)
+* In the share client, the second doc with the wikidata aspect, should poperty values matching test/wikidata-expected.txt 
+* When the view details of the ACA content app is expanded on the first doc, it should look like test/dbpedia-expected-aca.jpg
+* When the view details of the ACA content app is expanded on the second doc, it should like test/wikidata-expected-aca.jpg
+
+
+
 
 
 

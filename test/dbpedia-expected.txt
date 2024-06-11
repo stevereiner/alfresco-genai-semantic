@@ -1,0 +1,21 @@
+International Space Station (ISS) http://dbpedia.org/resource/International_Space_Station DBPEDIA_ENT
+human engineering http://dbpedia.org/resource/Human_factors_and_ergonomics DBPEDIA_ENT
+Earth http://dbpedia.org/resource/Earth DBPEDIA_ENT
+ISS http://dbpedia.org/resource/International_Space_Station DBPEDIA_ENT
+NASA http://dbpedia.org/resource/NASA DBPEDIA_ENT
+Roscosmos http://dbpedia.org/resource/Roscosmos DBPEDIA_ENT
+ESA http://dbpedia.org/resource/European_Space_Agency DBPEDIA_ENT
+JAXA http://dbpedia.org/resource/JAXA DBPEDIA_ENT
+CSA http://dbpedia.org/resource/Canadian_Space_Agency DBPEDIA_ENT
+remarkable http://dbpedia.org/resource/ReMarkable DBPEDIA_ENT
+ISS http://dbpedia.org/resource/International_Space_Station DBPEDIA_ENT
+physics http://dbpedia.org/resource/Physics DBPEDIA_ENT
+biology http://dbpedia.org/resource/Biology DBPEDIA_ENT
+astronomy http://dbpedia.org/resource/Astronomy DBPEDIA_ENT
+Chris Hadfield http://dbpedia.org/resource/Chris_Hadfield DBPEDIA_ENT
+Scott Kelly http://dbpedia.org/resource/Scott_Kelly_(astronaut) DBPEDIA_ENT
+ISS http://dbpedia.org/resource/International_Space_Station DBPEDIA_ENT
+space exploration http://dbpedia.org/resource/Space_exploration DBPEDIA_ENT
+SpaceX http://dbpedia.org/resource/SpaceX DBPEDIA_ENT
+Blue Origin http://dbpedia.org/resource/Blue_Origin DBPEDIA_ENT
+ISS http://dbpedia.org/resource/International_Space_Station DBPEDIA_ENT

@@ -1,0 +1,10 @@
+International Space Station https://www.wikidata.org/entity/Q25271 ORG
+Earth https://www.wikidata.org/entity/Q2 LOC
+ISS https://www.wikidata.org/entity/Q25271 ORG
+world https://www.wikidata.org/entity/Q2 LOC
+NASA https://www.wikidata.org/entity/Q23548 ORG
+Roscosmos https://www.wikidata.org/entity/Q190795 ORG
+ESA https://www.wikidata.org/entity/Q792 LOC
+JAXA https://www.wikidata.org/entity/Q179103 ORG
+Chris Hadfield https://www.wikidata.org/entity/Q1076962 PERSON
+Blue Origin https://www.wikidata.org/entity/Q885836 ORG
