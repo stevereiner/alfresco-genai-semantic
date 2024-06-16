@@ -107,10 +107,14 @@ Following tools can be used to build and deploy this project (same as alfresco-g
 * [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 * [Maven 3.9](https://maven.apache.org/download)
 * Not required, but if you want to work separately with python used in previous genai and with
-  spacy code added, setup a virtual env with a recent version of python (I am using 3.12.3)
-  along with the packages in genai-stack/requirements.txt plus langchain (0.2.2 or 0.2.3)
-  since document.Dockerfile lists FROM langchain/langchain.  Use pip, don't use conda.
-
+  spacy code added, setup a new python virtual env with a python 3.12 and activate itThen use the requirements.txt file in alfresco-genai-semantic\genai-stack: 
+  ```bash
+  pip install -r requirements.txt
+  ```
+  Note the document.DockerFile is now setup to use python 3.12 (FROM python:3.12) instead of the python 3.11 you got previously with docker by default with "FROM langchain/langchain"
+  Now requiredments.txt has versions of every package that works with python 3.12 and 3.12.x versions. Note docker when it builds gets versions of python on its own and is not impacted by what you 
+  have installed in your enviroment.
+  
 ## Testing
 * Note: when alfresco-genai-semantic is up and running correctly 11/13 images / sub-containers will continue.
 These can be seen in docker desktop, or with docker compose ps at the command line. The pull-model and pull-vision-model will do their jobs and exit.

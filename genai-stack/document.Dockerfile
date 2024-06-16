@@ -1,4 +1,5 @@
-FROM langchain/langchain
+#FROM langchain/langchain
+FROM python:3.12
 
 WORKDIR /app
 
