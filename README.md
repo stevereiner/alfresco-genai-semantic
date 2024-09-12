@@ -48,7 +48,7 @@ Not needed on Windows. See [alfresco-docker-install project](https://github.com/
 8. docker compose down, docker compose up
 
 Note: After other changes sometimes can't go wrong with
-docker compose down, docker build --no-cache, docker compose up --force-recreate
+docker compose down, docker compose build --no-cache, docker compose up --force-recreate
 
 # Custom content model
   * The changes to alfresco-genai comtent-model.xml is already built in "alfresco-genai-semantic\alfresco\alfresco\modules\jars\genai-model-repo-1.0.0.jar"  If changed again would need to mvn clean package in "alfresco-genai-semantic\alfresco-ai\alfresco-ai-model\genai-model-repo" and replace the jar in alfresco\alfresco and rebuild the project
