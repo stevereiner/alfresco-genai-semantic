@@ -1,4 +1,5 @@
 include:
   - genai-stack/compose.yaml
   - alfresco/compose.yaml
-#  - alfresco/compose-ai.yaml
+ # - alfresco/compose-ai.yaml
+ # - dbpedia-spotlight/compose.yaml
