@@ -2,6 +2,10 @@ import json
 import spacy
 from fastapi import UploadFile
 from PyPDF2 import PdfReader
+import os
+from dotenv import load_dotenv
+
+load_dotenv(".env")
 
 test_text = '''The International Space Station (ISS) is an awe-inspiring feat 
 of human engineering and collaboration. Orbiting the Earth at an 
@@ -29,37 +33,38 @@ def getEntityLinksWikidata(file: UploadFile):
 
     nlp = spacy.load('en_core_web_trf')
 
-    nlp.add_pipe('opentapioca')
+    nlp.add_pipe("entityLinker", last=True)
 
     doc = nlp(text)
 
-    '''
-    #links =[{"text": ent.text, 
-            "description": ent._.description,
-            "score:": ent._.score,
-            "start": ent.start_char,
-            "end": ent.end_char,
-            "label": ent.label_,
-            "kb_id": ent.kb_id_,
-            "kb_url": "https://www.wikidata.org/entity/" + ent.kb_id_}
-            for ent in doc.ents]
-
-    #links.append(f'<a href="https://www.wikidata.org/entity/{ent.kb_id_}">{ent.text}</a>')            
-    '''    
-    
+    labels = []
     links = []
-    for ent in doc.ents:
-        links.append(ent.text + " " + "https://www.wikidata.org/entity/" + ent.kb_id_ + " " + ent.label_)
+    type_lists = []
+    separator = ","
 
-    links_json = json.dumps(links)
+    for ent in doc._.linkedEntities:
+        labels.append(ent.get_label())
+        links.append(ent.get_url())
+        
+        super_list = ""
+        super_entities =  ent.get_super_entities()
 
-    print(links_json)
+        for  i, super_ent in enumerate(super_entities):
+            super_list += "Wikidata:Q" + str(super_ent.get_id())  
+            if i < len(super_entities) - 1:
+                super_list += separator
+                
+        type_lists.append(super_list)
 
-    return links_json
+    return {"labels": json.dumps(labels), "links": json.dumps(links), "type_lists": json.dumps(type_lists)}
 
 
 def getEntityLinksDBpedia(file: UploadFile):
 
+    dbpedia_spotlight_url  = os.getenv("DBPEDIA_SPOTLIGHT_URL")
+
+    #print(dbpedia_spotlight_url)    
+    
     pdf_reader = PdfReader(file.file)
     text = ""
     for page in pdf_reader.pages:
@@ -69,21 +74,20 @@ def getEntityLinksDBpedia(file: UploadFile):
     nlp = spacy.load('en_core_web_trf')
 
     # add the pipeline stage
-    nlp.add_pipe('dbpedia_spotlight')
-
+    # nlp.add_pipe('dbpedia_spotlight')
+    # use local dbpedia spotlight server
+    nlp.add_pipe('dbpedia_spotlight', config={'dbpedia_rest_endpoint':   dbpedia_spotlight_url + '/rest'})
+    
     # get the document
     doc = nlp(text)
 
-    #links =  [(ent.text, ent.label_, ent.kb_id_, ent._.dbpedia_raw_result) for ent in doc.ents]
-    #links.append(f'<a href="{ent.kb_id_}">{ent.text}</a>')
-
+    labels = []
     links = []
+    type_lists = []
+    
     for ent in doc.ents:
-        #types = ent._.dbpedia_raw_result['@types']
-        links.append(ent.text +  " " + ent.kb_id_ +  " " + ent.label_)
+        labels.append(ent.text)
+        links.append(ent.kb_id_)
+        type_lists.append(ent._.dbpedia_raw_result['@types'])
 
-    links_json = json.dumps(links)
-
-    print(links_json)
-
-    return links_json
+    return {"labels": json.dumps(labels), "links": json.dumps(links), "type_lists": json.dumps(type_lists)}

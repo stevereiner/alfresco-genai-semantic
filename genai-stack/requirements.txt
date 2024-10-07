@@ -24,7 +24,8 @@ en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en
 spacy==3.7.5
 spacy-loggers==1.0.5
 spacy_dbpedia_spotlight==0.2.6
-spacyopentapioca==0.1.7
+#spacyopentapioca==0.1.7
+spacy-entity-linker
 #spacy-llm==0.7.2
 
 

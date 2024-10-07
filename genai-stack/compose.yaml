@@ -48,6 +48,7 @@ services:
       - SUMMARY_LANGUAGE=${SUMMARY_LANGUAGE}
       - SUMMARY_SIZE=${SUMMARY_SIZE}
       - TAGS_NUMBER=${TAGS_NUMBER}
+      - DBPEDIA_SPOTLIGHT_URL=${DBPEDIA_SPOTLIGHT_URL-http://host.docker.internal:8601}
     depends_on:
       database:
         condition: service_healthy

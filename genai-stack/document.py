@@ -175,15 +175,15 @@ async def summary(file: UploadFile):
 @app.post("/entitylink-wikidata")
 async def entitylinkWikidata(file: UploadFile):
 
-    links = getEntityLinksWikidata(file)
-
-    return {"links": links, "target": "Wikidata"}
+    return getEntityLinksWikidata(file)
 
 
 @app.post("/entitylink-dbpedia")
 async def entityLinkDBpedia(file: UploadFile):
 
-    links = getEntityLinksDBpedia(file)
+    return getEntityLinksDBpedia(file)
 
-    return {"links": links, "target": "DBpedia"}
+
+
+
 
