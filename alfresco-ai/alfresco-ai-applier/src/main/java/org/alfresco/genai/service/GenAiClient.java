@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +43,7 @@ public class GenAiClient {
      */
     @Value("${genai.request.timeout}")
     Integer genaiTimeout;
+
    
     /**
      * Static instance of {@link JsonParser} to parse JSON responses from the GenAI service.
@@ -188,17 +188,33 @@ public class GenAiClient {
                 .url(genaiUrl + "/entitylink-wikidata")
                 .post(requestBody)
                 .build();
-        
-        String response = client.newCall(request).execute().body().string();
 
+        String response = client.newCall(request).execute().body().string();
+               
         Map<String, Object> aiResponse = JSON_PARSER.parseMap(response);
-        String linksJason = aiResponse.get("links").toString();
-        List<Object> objectList = JSON_PARSER.parseList(linksJason);
-		List<String> stringList = objectList.stream()
+        
+        String json = aiResponse.get("labels").toString();
+        List<Object> objectList = JSON_PARSER.parseList(json);
+		List<String> stringListLabels = objectList.stream()
 		                                    .map(Object::toString)
 		                                    .collect(Collectors.toList());
+
+		json = aiResponse.get("links").toString();
+        objectList = JSON_PARSER.parseList(json);
+		List<String> stringListLinks = objectList.stream()
+		                                    .map(Object::toString)
+		                                    .collect(Collectors.toList());
+		
+		json = aiResponse.get("type_lists").toString();
+        objectList = JSON_PARSER.parseList(json);
+		List<String> stringListTypeLists = objectList.stream()
+		                                    .map(Object::toString)
+		                                    .collect(Collectors.toList());
+	
         return new EntityLinks()
-                .entityLinks(stringList)
+                .entityLabels(stringListLabels)
+                .entityLinks(stringListLinks)
+                .entityTypeLists(stringListTypeLists)
                 .target("Wikidata");
     }
 
@@ -226,17 +242,32 @@ public class GenAiClient {
                 .build();
 
         String response = client.newCall(request).execute().body().string();
-        
+               
         Map<String, Object> aiResponse = JSON_PARSER.parseMap(response);
-        String linksJason = aiResponse.get("links").toString();
-        List<Object> objectList = JSON_PARSER.parseList(linksJason);
-		List<String> stringList = objectList.stream()
+        
+        String json = aiResponse.get("labels").toString();
+        List<Object> objectList = JSON_PARSER.parseList(json);
+		List<String> stringListLabels = objectList.stream()
 		                                    .map(Object::toString)
 		                                    .collect(Collectors.toList());
-        return new EntityLinks()
-                .entityLinks(stringList)
-                .target("DBpedia");
+
+		json = aiResponse.get("links").toString();
+        objectList = JSON_PARSER.parseList(json);
+		List<String> stringListLinks = objectList.stream()
+		                                    .map(Object::toString)
+		                                    .collect(Collectors.toList());
+		
+		json = aiResponse.get("type_lists").toString();
+        objectList = JSON_PARSER.parseList(json);
+		List<String> stringListTypeLists = objectList.stream()
+		                                    .map(Object::toString)
+		                                    .collect(Collectors.toList());
+
+		return new EntityLinks()
+                .entityLabels(stringListLabels)
+                .entityLinks(stringListLinks)
+                .entityTypeLists(stringListTypeLists)
+                .target("DBpedia");      
     }
-    
 
 }

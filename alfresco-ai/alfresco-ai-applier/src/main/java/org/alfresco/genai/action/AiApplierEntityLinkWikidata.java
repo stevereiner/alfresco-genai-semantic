@@ -29,11 +29,18 @@ public class AiApplierEntityLinkWikidata implements AiApplierAction {
     NodesApi nodesApi;
 
     /**
-     * The property name for storing the document Wikidata entity links in the Alfresco repository obtained from configuration.
+     * The property names for storing the document Wikidata entity links in the Alfresco repository obtained from configuration.
      */
+    @Value("${content.service.entitylinks-wikidata.labelsWikidata.property}")
+    String entitylabelsWikidataProperty;
+
     @Value("${content.service.entitylinks-wikidata.linksWikidata.property}")
     String entitylinksWikidataProperty;
 
+    @Value("${content.service.entitylinks-wikidata.typelistsWikidata.property}")
+    String entitytypelistsWikidataProperty;
+
+    
     /**
      * Http client for interacting with the GenAI service
      */

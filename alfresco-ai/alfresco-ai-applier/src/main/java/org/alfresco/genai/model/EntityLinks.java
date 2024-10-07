@@ -14,7 +14,9 @@ public class EntityLinks {
     /**
      * The entity links text content for the document.
      */
+	private List<String> entityLabels;
     private List<String> entityLinks;
+	private List<String> entityTypeLists;
 
     /**
      * The target of the entity links (wikidata or dbpedia).
@@ -22,6 +24,15 @@ public class EntityLinks {
     private String target;
 
   
+    /**
+     * Gets the entity labels text for of the document.
+     *
+     * @return The entity labels text.
+     */
+    public  List<String> getEntityLabels() {
+        return entityLabels;
+    }
+
     /**
      * Gets the entity links text for of the document.
      *
@@ -32,6 +43,26 @@ public class EntityLinks {
     }
 
     /**
+     * Gets the entity type lists text for of the document.
+     *
+     * @return The entity type lists text.
+     */
+    public  List<String> getEntityTypeLists() {
+        return entityTypeLists;
+    }
+
+    /**
+     * Sets the entity labels text content for the document.
+     *
+     * @param entityLabels The entity labels text.
+     * @return This {@code EntityLinks} instance for method chaining.
+     */
+    public EntityLinks entityLabels(List<String> entityLabels) {
+        this.entityLabels = entityLabels;
+        return this;
+    }
+        
+    /**
      * Sets the entity links text content for the document.
      *
      * @param entityLinks The entity links text.
@@ -39,6 +70,17 @@ public class EntityLinks {
      */
     public EntityLinks entityLinks(List<String> entityLinks) {
         this.entityLinks = entityLinks;
+        return this;
+    }
+
+    /**
+     * Sets the entity type lists text content for the document.
+     *
+     * @param entityTypeLists The entity type lists text.
+     * @return This {@code EntityLinks} instance for method chaining.
+     */
+    public EntityLinks entityTypeLists(List<String> entityTypeLists) {
+        this.entityTypeLists = entityTypeLists;
         return this;
     }
     

@@ -29,11 +29,18 @@ public class AiApplierEntityLinkDBpedia implements AiApplierAction {
     NodesApi nodesApi;   
     
     /**
-     * The property name for storing the document DBpedia entity links in the Alfresco repository obtained from configuration.
+     * The property names for storing the document DBpedia entity links in the Alfresco repository obtained from configuration.
      */
+    @Value("${content.service.entitylinks-dbpedia.labelsDBpedia.property}")
+    String entitylabelsDBpediaProperty;
+
     @Value("${content.service.entitylinks-dbpedia.linksDBpedia.property}")
     String entitylinksDBpediaProperty;
 
+    @Value("${content.service.entitylinks-dbpedia.typelistsDBpedia.property}")
+    String entitytypelistsDBpediaProperty;
+
+    
     /**
      * Http client for interacting with the GenAI service
      */

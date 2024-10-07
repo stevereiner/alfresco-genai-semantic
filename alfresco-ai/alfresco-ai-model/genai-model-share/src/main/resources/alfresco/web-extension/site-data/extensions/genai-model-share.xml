@@ -131,11 +131,21 @@
           <forms>
             <form>
               <field-visibility>
+                <show for-mode="view" id="genai:labelsDBpedia"/>
                 <show for-mode="view" id="genai:linksDBpedia"/>
+                <show for-mode="view" id="genai:typelistsDBpedia"/>
               </field-visibility>
               <appearance>
                 <set appearance="title" id="genai:entitylinks-dbpedia_cmm_set0" label-id="DBpedia Entity Links"/>
+                <field id="genai:labelsDBpedia" read-only="true" set="genai:entitylinks-dbpedia_cmm_set0">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                  </control>
+                </field>
                 <field id="genai:linksDBpedia" read-only="true" set="genai:entitylinks-dbpedia_cmm_set0">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                  </control>
+                </field>
+                <field id="genai:typelistsDBpedia" read-only="true" set="genai:entitylinks-dbpedia_cmm_set0">
                   <control template="/org/alfresco/components/form/controls/textfield.ftl">
                   </control>
                 </field>
@@ -148,11 +158,21 @@
           <forms>
             <form>
               <field-visibility>
+                <show for-mode="view" id="genai:labelsWikidata"/>
                 <show for-mode="view" id="genai:linksWikidata"/>
+                <show for-mode="view" id="genai:typelistsWikidata"/>
               </field-visibility>
               <appearance>
                 <set appearance="title" id="genai:entitylinks-wikidata_cmm_set0" label-id="Wikidata Entity Links"/>
+                <field id="genai:labelsWikidata" read-only="true" set="genai:entitylinks-wikidata_cmm_set0">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                  </control>
+                </field>
                 <field id="genai:linksWikidata" read-only="true" set="genai:entitylinks-wikidata_cmm_set0">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                  </control>
+                </field>
+                <field id="genai:typelistsWikidata" read-only="true" set="genai:entitylinks-wikidata_cmm_set0">
                   <control template="/org/alfresco/components/form/controls/textfield.ftl">
                   </control>
                 </field>

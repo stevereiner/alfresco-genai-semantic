@@ -138,12 +138,32 @@
         <aspect name="genai:entitylinks-wikidata">
             <title>Wikidata Entity Links</title>
             <properties>
-                <property name="genai:linksWikidata">
-                    <title>Tag Links</title>
+                <property name="genai:labelsWikidata">
+                    <title>Labels</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
                     <multiple>true</multiple>                    
                     <index enabled="true">
+                        <tokenised>true</tokenised>
+                        <facetable>false</facetable>
+                    </index>
+                </property>
+                <property name="genai:linksWikidata">
+                    <title>Links</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <multiple>true</multiple>                    
+                    <index enabled="false">
+                        <tokenised>true</tokenised>
+                        <facetable>false</facetable>
+                    </index>
+                </property>
+                <property name="genai:typelistsWikidata">
+                    <title>Super Type Lists</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <multiple>true</multiple>                    
+                    <index enabled="false">
                         <tokenised>true</tokenised>
                         <facetable>false</facetable>
                     </index>
@@ -153,13 +173,33 @@
 
         <aspect name="genai:entitylinks-dbpedia">
             <title>DBpedia Entity Links</title>
-            <properties>
-                <property name="genai:linksDBpedia">
-                    <title>Tag Links</title>
+            <properties>            
+                <property name="genai:labelsDBpedia">
+                    <title>Labels</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
-                    <multiple>true</multiple>
+                    <multiple>true</multiple>                    
                     <index enabled="true">
+                        <tokenised>true</tokenised>
+                        <facetable>false</facetable>
+                    </index>
+                </property>
+                <property name="genai:linksDBpedia">
+                    <title>Links</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <multiple>true</multiple>                    
+                    <index enabled="false">
+                        <tokenised>true</tokenised>
+                        <facetable>false</facetable>
+                    </index>
+                </property>
+                <property name="genai:typelistsDBpedia">
+                    <title>Super Type Lists</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <multiple>true</multiple>                    
+                    <index enabled="false">
                         <tokenised>true</tokenised>
                         <facetable>false</facetable>
                     </index>

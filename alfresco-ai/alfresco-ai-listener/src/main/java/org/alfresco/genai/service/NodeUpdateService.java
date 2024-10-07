@@ -101,31 +101,42 @@ public class NodeUpdateService {
      */
     @Value("${content.service.description.model.property}")
     private String descriptionModelProperty;
-
     
     /**
-     * Aspect name for storing all Wikidata entity links data.
+     * Aspect name for storing Wikidata entity links data.
      */
     @Value("${content.service.entitylinks-wikidata.aspect}")
     private String entityLinksWikidataAspect;
 
     /**
-     * The property name for storing  Wikidata entity links data in the Alfresco repository obtained from configuration.
+     * The property names for storing  Wikidata entity links data in the Alfresco repository obtained from configuration.
      */
+    @Value("${content.service.entitylinks-wikidata.labelsWikidata.property}")
+    private String labelsWikidataProperty;
+
     @Value("${content.service.entitylinks-wikidata.linksWikidata.property}")
     private String linksWikidataProperty;
+
+    @Value("${content.service.entitylinks-wikidata.typelistsWikidata.property}")
+    private String typelistsWikidataProperty;
     
     /**
-     * Aspect name for storing all DBpedia entity links data.
+     * Aspect name for storing DBpedia entity links data.
      */
     @Value("${content.service.entitylinks-dbpedia.aspect}")
     private String entityLinksDBpediaAspect;
-
+    
     /**
-     * The property name for storing DBpedia entity links data in the Alfresco repository obtained from configuration.
+     * The property names for storing DBpedia entity links data in the Alfresco repository obtained from configuration.
      */
+    @Value("${content.service.entitylinks-dbpedia.labelsDBpedia.property}")
+    private String labelsDBpediaProperty;
+
     @Value("${content.service.entitylinks-dbpedia.linksDBpedia.property}")
     private String linksDBpediaProperty;
+    
+    @Value("${content.service.entitylinks-dbpedia.typelistsDBpedia.property}")
+    private String typelistsDBpediaProperty;
     
     
     /**
@@ -270,9 +281,14 @@ public class NodeUpdateService {
         nodesApi.updateNode(uuid,
                 new NodeBodyUpdate()
                         .properties(Map.of(
-                                linksWikidataProperty, entityLinks.getEntityLinks() ))
+                        		labelsWikidataProperty, entityLinks.getEntityLabels(),
+                                linksWikidataProperty, entityLinks.getEntityLinks(),
+                                typelistsWikidataProperty, entityLinks.getEntityTypeLists() ))
                         .aspectNames(aspectNames),
                 null, null);
+
+        entityLinks.getEntityLabels().forEach(tag ->
+    		tagsApi.createTagForNode(uuid, new TagBody().tag(tag.replace('.', ' ').trim()), null));        
     }
 
     /**
@@ -295,10 +311,15 @@ public class NodeUpdateService {
         nodesApi.updateNode(uuid,
                 new NodeBodyUpdate()
                         .properties(Map.of(
-                                linksDBpediaProperty, entityLinks.getEntityLinks() ))
+                        		labelsDBpediaProperty, entityLinks.getEntityLabels(),
+                                linksDBpediaProperty, entityLinks.getEntityLinks(),
+                                typelistsDBpediaProperty, entityLinks.getEntityTypeLists() ))
                         .aspectNames(aspectNames),
                 null, null);
+
+
+        entityLinks.getEntityLabels().forEach(tag ->
+    		tagsApi.createTagForNode(uuid, new TagBody().tag(tag.replace('.', ' ').trim()), null));                
     }
-    
-    
+        
 }

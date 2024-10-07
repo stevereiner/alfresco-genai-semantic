@@ -100,11 +100,17 @@ public class NodeUpdateService {
     private String entityLinksWikidataAspect;
 
     /**
-     * The property name for storing  Wikidata entity links data in the Alfresco repository obtained from configuration.
+     * The property names for storing  Wikidata entity links data in the Alfresco repository obtained from configuration.
      */
+    @Value("${content.service.entitylinks-wikidata.labelsWikidata.property}")
+    private String labelsWikidataProperty;
+
     @Value("${content.service.entitylinks-wikidata.linksWikidata.property}")
     private String linksWikidataProperty;
 
+    @Value("${content.service.entitylinks-wikidata.typelistsWikidata.property}")
+    private String typelistsWikidataProperty;
+    
     /**
      * Aspect name for storing DBpedia entity links data.
      */
@@ -112,10 +118,16 @@ public class NodeUpdateService {
     private String entityLinksDBpediaAspect;
     
     /**
-     * The property name for storing DBpedia entity links data in the Alfresco repository obtained from configuration.
+     * The property names for storing DBpedia entity links data in the Alfresco repository obtained from configuration.
      */
+    @Value("${content.service.entitylinks-dbpedia.labelsDBpedia.property}")
+    private String labelsDBpediaProperty;
+
     @Value("${content.service.entitylinks-dbpedia.linksDBpedia.property}")
     private String linksDBpediaProperty;
+ 
+    @Value("${content.service.entitylinks-dbpedia.typelistsDBpedia.property}")
+    private String typelistsDBpediaProperty;
     
     
     /**
@@ -216,7 +228,7 @@ public class NodeUpdateService {
     }
     
     /**
-     * Updates the node properties with entity links for the document identified by its UUID based
+     * Updates the node properties with Wikidata entity links for the document identified by its UUID based
      * on the provided {@link EntityLinks} object.
      *
      * @param uuid         The unique identifier of the document node.
@@ -235,13 +247,18 @@ public class NodeUpdateService {
         nodesApi.updateNode(uuid,
                 new NodeBodyUpdate()
                         .properties(Map.of(
-                                linksWikidataProperty, entityLinks.getEntityLinks() ))
+                        		labelsWikidataProperty, entityLinks.getEntityLabels(),
+                                linksWikidataProperty, entityLinks.getEntityLinks(),
+                                typelistsWikidataProperty, entityLinks.getEntityTypeLists() ))
                         .aspectNames(aspectNames),
                 null, null);
+
+        entityLinks.getEntityLabels().forEach(tag ->
+        	tagsApi.createTagForNode(uuid, new TagBody().tag(tag.replace('.', ' ').trim()), null));        
     }
 
     /**
-     * Updates the node properties with entity links for the document identified by its UUID based
+     * Updates the node properties with DBpedia entity links for the document identified by its UUID based
      * on the provided {@link EntityLinks} object.
      *
      * @param uuid         The unique identifier of the document node.
@@ -260,9 +277,15 @@ public class NodeUpdateService {
         nodesApi.updateNode(uuid,
                 new NodeBodyUpdate()
                         .properties(Map.of(
-                                linksDBpediaProperty, entityLinks.getEntityLinks() ))
+                        		labelsDBpediaProperty, entityLinks.getEntityLabels(),
+                                linksDBpediaProperty, entityLinks.getEntityLinks(),
+                                typelistsDBpediaProperty, entityLinks.getEntityTypeLists() ))
                         .aspectNames(aspectNames),
                 null, null);
-    }    
-    
+
+
+        entityLinks.getEntityLabels().forEach(tag ->
+    		tagsApi.createTagForNode(uuid, new TagBody().tag(tag.replace('.', ' ').trim()), null));                
+    }
+            
 }
