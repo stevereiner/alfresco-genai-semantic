@@ -4,73 +4,61 @@
 Generative AI with local or cloud LLMs for Alfresco. Provides: summarization, categorization, image description, chat prompting about doc content.
 
 ## Added in alfresco-genai-semantic:
-This adds NER / entity linking of documents in alfresco to Wikidata and DBpedia. 
-Currently the 2 custom aspects have multivalue properties for the links, alfresco tags aren't used.
-The [spaCy NLP python library](https://spacy.io/) along with spaCy projects. 
-[spaCyOpenTapioca](https://spacy.io/universe/project/spacyopentapioca) is used for getting Wikidata entity links.
-[DBpedia Spotlight for SpaCy](https://spacy.io/universe/project/spacy-dbpedia-spotlight) is used for getting DBpedia entity links.
-Note these both use external servers, which can be setup locally.
-NER can be done with [spaCy](https://spacy.io/usage/linguistic-features#named-entities)
+This adds NER / entity linking auto tagging of documents in Alfresco to Wikidata and DBpedia terms.
+The dbpedia and wikidata custom aspects have multivalue properties for the entity link labels, link urls, and super type lists.
+Tags are added using the labels of the entity links. Regular alfresco tags are used to work with existing Share and ACA clients. Currently, a hierarchy of categories with the type and super types are not created.
+
+The [spaCy NLP python library](https://spacy.io/) along with spaCy projects are used.
+The [spaCy-entity-linker](https://github.com/egerber/spaCy-entity-linker) python library is used for getting Wikidata entity links without having to call a public serivce api.
+It was created before spaCy had its own entity linking system. It still has the advantage of not needing to do training.  This project had used [spaCyOpenTapioca](https://spacy.io/universe/project/spacyopentapioca) for Wikidata entity linking, but the service it uses recently gives SSL certificate error. Setting  up a local OpenTapioca is an involved process. Local is better anyway for security and performance.
+
+[DBpedia Spotlight for SpaCy](https://spacy.io/universe/project/spacy-dbpedia-spotlight) is used for getting DBpedia entity links, The public service it was using by default, also recently has a SSL certificate issue.
+So a local dbpedia-spotlight docker container is now composed into alfresco-genai-semantic and the local url is passed to the spacy-dbpedia-spotlight python apis.
+
 The [spaCy-LLM](https://spacy.io/usage/large-language-models) python package integrates Large Language Models (LLMs) into spaCy pipelines. This project currently doesn't use spacy-llm.
 
 Note alfresco community docker 23.2 is included instead of 23.1
 
-Note: performance could be improved by changing things to send text from alfresco instead of pdf renditions to the python genai rest apis.
+Note: performance could be improved by changing things to send text renditions from alfresco instead of pdf renditions to the python genai and genai-semantic rest apis. These apis just turn around and
+get text of the pdfs. Although, with things like LlamaIndex LlamaParse and LLMSherpa, having pdf and their structure would help in how things are passed to LLMs.
 
 ## To Use
   * To use, in Share UI client, add either a DBpedia Entity Links (genai:entitylinks-dbpedia) or a Wikidata Entity Links (genai:entitylinks-wikidata) aspect in Manage Aspects.
-  * The entity links can be seen in the in Share document details right side in the properties section. The best way to see them is in the ACA Content App with View Details with the Expand Panel clicked.
-  * `genai:entitylinks-dbpedia` aspect stores a value in a multivalue property genai:linksDBpedia for each entity link to DBpedia. Each value has the text of term, the DBpedia link url, and DBPEDIA_ENT. Example: Earth http://dbpedia.org/resource/Earth DBPEDIA_ENT.  
-  * `genai:entitylinks-wikidata` aspect stores a value in a multivalue property genai:linksWikidata for each entity link to Wikidata. Each value has the text of term, the Wikidata link url, and LOC or ORG, PERSON, etc. Example: Earth https://www.wikidata.org/entity/Q2 LOC
+  * Tags on a doc are displayed below doc info in file lists in both Share and ACA. The entity link multi-value properties (labels, links, super type lists) can be seen in the in Share document details right side in the properties section. The best way to see the properties in the ACA Content App with View Details with the Expand Panel clicked.   
   * Note the original genai aspects show up better in Share document details. ACA content app by default, only has a single line for single value properties.
   * To use the original alfresco-genai actions, in the Manage Aspects of Share add any of the following aspects:
-  * `genai:summarizable` aspect is used to store `summary` and `tags` generated with AI. Note the tag terms come back from the summary prompt. By default, they are stored in the multivalue property genai:tags of genai:summarizable aspect. See configuration section below for how to setup storing them in tags.
+  * `genai:summarizable` aspect is used to store `summary` and `tags` generated with AI. Note the tag terms come back from the summary prompt. By default, they are stored in the multivalue property genai:tags of genai:summarizable aspect. They can be configured to create tags instead (in application.properties of ai-applier and ai-listener)
   * `genai:promptable` aspect is used to store the `question` provided by the user and the `answer` generated with AI
   * `genai:classifiable` aspect is used to store the list of terms available for the AI to classify a document. It should be applied to a folder
   * `genai:classified` aspect is used to store the term selected by the AI. It should be applied to a document
   * `genai:descriptable` aspect is used to store the description generated with AI. It should be applied to a picture
 
-## Notes on the entity links property values and python code
-  * `genai:entitylinks-dbpedia`  In alfresco-genai-semantic\genai-stack\entitylink.py, a list of 0 to n types can be used from "ent._.dbpedia_raw_result['@types']" instead of DBPEDIA_ENT label, but its varying and complex: example for Earth "Wikidata:Q634,Schema:Place,DBpedia:Place,DBpedia:Location,DBpedia:CelestialBody,DBpedia:Planet"
-  * `genai:entitylinks-wikidata` In alfresco-genai-semantic\genai-stack\entitylink.py, addtional fields such as  "start" and  "end", could be used with  [displacy](https://spacy.io/usage/visualizers#ent) to display highlighted text term spans and provide entity link clickable labels.
-
 ##  Building
-To Build alfresco-genai-semantic, use the same steps as alfesco-genai below:
-1. alfresco/create_volumes.sh can be used to prepare for first time
-startup of alfresco on linux, and I assume mac. This creates log and data folders and sets their permissions.
-Not needed on Windows. See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docker-installer?tab=readme-ov-file#docker-volumes)
-2. Docker compose top level intially with alfresco-ai-listener commented out in compose.yaml
-3. docker compose up
-4. In alfresco-ai-applier dir: mvn clean package
-5. In alfresco-ai-listener dir: mvn clean package
-6. In alfresco-ai-listener dir: docker build . -t alfresco-ai-listener
-7. in top level compose.yaml, uncomment the line to include composing in alfresco-ai-listener
-8. docker compose down, docker compose up
+To Build alfresco-genai-semantic, use the same steps as alfesco-genai but with some added steps:
+- `sudo alfresco/create_volumes.sh` can be used to prepare for first time
+startup of alfresco on `Linux`, and I assume `Mac`. This creates log and data folders and sets their permissions.
+Not needed on `Windows`. See [alfresco-docker-install project](https://github.com/Alfresco/alfresco-docker-installer?tab=readme-ov-file#docker-volumes)
+- Start with the `top level compose.yaml` intially with alfresco-ai-listener and dbpedia-spotlight commented out
+- Run `docker compose up`
+- In alfresco-ai-applier dir: `mvn clean package`
+- Now the alfresco-ai-applier jar can be tested with exsting alfresco content to apply the Wikidata aspect with `-applier.root.folder` `--applier.action=ENTITYLINKWIKIDATA`. Note the Wikidata code will the first time download a  595 MB model file that expands to to  1.2 GB? automatically. Sometimes you need to wait for pdf renditions to be created and run the applier jar again.
+- ` docker compose down`
+- in `top level compose.yaml`, uncomment the line to include composing in `dbpedia-spotlight/compose.yaml`
+- Run `docker volume create spotlight-models` for storing models for multiple languages (the `dbpedia-spotlight/compose.yaml` is only configured for one english service). 
+- Run `docker compose up` , can look inside dbpedia-spotlight.en container at files and see the  2.2 GB tar being downloaded and then extracted the first time to the `spotlight-models` volume. This can be as fast as 2.5 minutes or up to 30 minutes for me on Windows. (Just now on Ubuntu its taking me hours its not done yet) The english `en` folder in the spotlight-models' volume will be 4.3 GB.  
+- Now the alfresco-ai-applier jar can be tested with exsting alfresco content to apply the DBpedia aspect with `-applier.root.folder` `--applier.action=ENTITYLINKDBPEDIA`
+- In alfresco-ai-listener dir: `mvn clean package`
+- In alfresco-ai-listener dir: `docker build . -t alfresco-ai-listener`
+- in `top level compose.yaml`, uncomment the line to include composing in alfresco-ai-listener
+- Run `docker compose up` , now can add dbpedia or wikidata aspects to new or existing content in share and see results in share and or dthe content app.
 
 Note: After other changes sometimes can't go wrong with
-docker compose down, docker compose build --no-cache, docker compose up --force-recreate
+`docker compose down`, then `docker compose build --no-cache`, then `docker compose up --force-recreate`
 
 # Custom content model
   * The changes to alfresco-genai comtent-model.xml is already built in "alfresco-genai-semantic\alfresco\alfresco\modules\jars\genai-model-repo-1.0.0.jar"  If changed again would need to mvn clean package in "alfresco-genai-semantic\alfresco-ai\alfresco-ai-model\genai-model-repo" and replace the jar in alfresco\alfresco and rebuild the project
   *  The changes to alfresco-genai genai-model-share.xml is already built in "alfresco-genai-semantic\alfresco\share\modules\jars\genai-model-share-1.0.0.jar" If changed again, would need to mvn clean package in "alfresco-genai-semantic\alfresco-ai\alfresco-ai-model\genai-model-share" and replace the jar in alfresco\share and rebuild the project
 
-## Configuration
-Note that the application.properties of ai-applier and ai-listener can be configured to override default storage in properties
-of tags and or llm model name by the genai:summarizable apsect and instead as alfresco tags (and rebuilding independent ai-applier, and rebuilding ai-listener
-and rebuilding the top level compose with updated alfresco-ai-listener docker)
-Note: the entity link aspect properties don't support this reconfiguring.
-```
-# Aspect that triggers the summarization task
-content.service.summary.aspect=genai:summarizable
-# Node property to store the summary obtained from GenAI Stack
-content.service.summary.summary.property=genai:summary
-# Node property to store tags obtained from GenAI Stack; use TAG as a value to use a tag instead of a property
-content.service.summary.tags.property=genai:tags
-#content.service.summary.tags.property=TAG
-# Node property to store the Large Language Model (LLM) used; use TAG as a value to use a tag instead of a property
-content.service.summary.model.property=genai:llmSummary
-#content.service.summary.tags.property=TAG
-```
 
 ## Alfresco-ai-applier
 alfresco-ai-applier jar can be used when ai-listener is not composed in,
@@ -116,14 +104,13 @@ Following tools can be used to build and deploy this project (same as alfresco-g
   have installed in your enviroment.
   
 ## Testing
-* Note: when alfresco-genai-semantic is up and running correctly 11/13 images / sub-containers will continue.
+* Note: when alfresco-genai-semantic is up and running correctly 12/14 images / sub-containers will continue.
 These can be seen in docker desktop, or with docker compose ps at the command line. The pull-model and pull-vision-model will do their jobs and exit.
 * In the alfresco-genai-semantic/test folder, upload space-station.txt to your folder in alfresco and apply the
 genai:entitylinks-dbpedia aspect
 * In the alfresco-genai-semantic/test folder, upload space-station.txt again to your folder in alfresco and apply the
-genai:entitylinks-wikidata aspect to the duplicate file. (Sometimes there is an issue doing both on the same doc)
+genai:entitylinks-wikidata aspect to the duplicate file. (Sometimes there is an issue doing both on the same doc and they would have huge lists of properties)
 * In the share client, the first doc with the dbpedia aspect should have property values matching test/dbpedia-expected.txt 
-(with the multi-values of the properties on separate lines without commas between them)
 * In the share client, the second doc with the wikidata aspect, should have property values matching test/wikidata-expected.txt 
 * When the view details of the ACA content app is expanded on the first doc, it should look like test/dbpedia-expected-aca.jpg
 * When the view details of the ACA content app is expanded on the second doc, it should like test/wikidata-expected-aca.jpg
