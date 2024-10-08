@@ -45,7 +45,7 @@ Not needed on `Windows`. See [alfresco-docker-install project](https://github.co
 - ` docker compose down`
 - in `top level compose.yaml`, uncomment the line to include composing in `dbpedia-spotlight/compose.yaml`
 - Run `docker volume create spotlight-models` for storing models for multiple languages (the `dbpedia-spotlight/compose.yaml` is only configured for one english service). 
-- Run `docker compose up` , can look inside dbpedia-spotlight.en container at files and see the  2.2 GB tar being downloaded and then extracted the first time to the `spotlight-models` volume. This can be as fast as 2.5 minutes or up to 30 minutes for me on Windows. (Just now on Ubuntu its taking me hours its not done yet) The english `en` folder in the spotlight-models' volume will be 4.3 GB.  
+- Run `docker compose up` , can look inside dbpedia-spotlight.en container at files and see the  2.2 GB tar being downloaded and then extracted the first time to the `spotlight-models` volume. This can be as fast as 2.5 minutes or up to 30 minutes for me on Windows. (Just now on Ubuntu its taking me over hour but then speeded up) The english `en` folder in the spotlight-models' volume will be 4.3 GB.  
 - Now the alfresco-ai-applier jar can be tested with exsting alfresco content to apply the DBpedia aspect with `-applier.root.folder` `--applier.action=ENTITYLINKDBPEDIA`
 - In alfresco-ai-listener dir: `mvn clean package`
 - In alfresco-ai-listener dir: `docker build . -t alfresco-ai-listener`
